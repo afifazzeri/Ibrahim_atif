@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Police & Robber — Made by Ibrahim Atif</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; touch-action: none; }
+        body {
+            background: #0a0a12; min-height: 100vh; display: flex; justify-content: center; align-items: center;
+            font-family: 'Courier New', monospace; padding: 8px; overflow: hidden;
+        }
+        .game-wrapper {
+            background: #12121e; padding: 12px 12px 16px; border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.9), inset 0 1px 4px rgba(255,255,255,0.05);
+            border: 1px solid #2a2a3a; max-width: 100%; display: flex; flex-direction: column;
+            align-items: center; position: relative;
+        }
+        canvas {
+            display: block; border-radius: 16px; box-shadow: 0 0 0 3px #0b0b12, 0 15px 30px black;
+            background: #1a1a28; touch-action: none; max-width: 100%; height: auto;
+        }
+        .credit-sign {
+            position: absolute; top: -14px; right: 18px; background: linear-gradient(135deg, #ffd966, #ffaa33);
+            color: #1a1a2e; padding: 6px 16px; border-radius: 20px; font-size: 0.72rem; font-weight: bold;
+            letter-spacing: 1.5px; text-transform: uppercase;
+            box-shadow: 0 4px 12px rgba(255,200,50,0.5), inset 0 2px 4px rgba(255,255,255,0.4);
+            border: 2px solid #fff3b0; z-index: 20; transform: rotate(-3deg);
+            text-shadow: 0 1px 0 rgba(255,255,255,0.5); white-space: nowrap; pointer-events: none;
+            animation: creditPop 3s ease-in-out infinite;
+        }
+        .credit-sign::before { content: '★ '; }
+        .credit-sign::after { content: ' ★'; }
+        @keyframes creditPop { 0%,100% { transform: rotate(-3deg) scale(1); } 50% { transform: rotate(-3deg) scale(1.05); } }
+        .info-panel {
+            display: flex; justify-content: space-between; align-items: center; margin-top: 12px;
+            color: #b0c0ff; text-shadow: 0 0 6px #2a3a9c; letter-spacing: 1px; font-weight: bold;
+            width: 100%; gap: 4px; flex-wrap: wrap; font-size: 0.72rem;
+        }
+        .stat-box {
+            background: #0c0c1e; padding: 5px 9px; border-radius: 30px;
+            box-shadow: inset 0 3px 8px #000, 0 4px 0 #0a0a18; border-bottom: 1px solid #3a4a8c;
+            display: flex; gap: 4px; align-items: baseline;
+        }
+        .stat-box span { color: #ffd966; font-size: 1rem; min-width: 1.8rem; text-align: center; }
+        .wanted-box span { color: #ff4a4a; }
+        .restart-btn {
+            background: #2c2c54; color: #d0d4ff; border: none; padding: 7px 12px;
+            font-size: 0.75rem; font-weight: bold; border-radius: 30px; letter-spacing: 1px;
+            box-shadow: 0 5px 0 #0d0d18, 0 6px 10px black; cursor: pointer; transition: 0.07s ease;
+            font-family: inherit; text-transform: uppercase; touch-action: manipulation; min-height: 36px;
+        }
+        .restart-btn:active { transform: translateY(4px); box-shadow: 0 1px 0 #0d0d18, 0 3px 8px black; }
+        .menu-btn { background: #4a2c54; color: #ffd0ff; box-shadow: 0 5px 0 #1d0d1d, 0 6px 10px black; }
+        .hint { color: #6f7f9f; font-size: 0.68rem; margin-top: 6px; text-align: center; letter-spacing: 1px; line-height: 1.4; }
+        .footer-credit {
+            color: #ffd966; font-size: 0.75rem; margin-top: 8px; text-align: center;
+            letter-spacing: 2px; font-weight: bold; text-shadow: 0 0 8px rgba(255,200,50,0.5);
+        }
+        .ability-bar { display: flex; gap: 5px; margin-top: 6px; justify-content: center; width: 100%; }
+        .ability-slot {
+            width: 42px; height: 42px; border-radius: 10px; background: rgba(20,20,40,0.8);
+            border: 2px solid #3a3a6a; display: flex; align-items: center; justify-content: center;
+            font-size: 1.3rem; position: relative; box-shadow: inset 0 2px 6px rgba(0,0,0,0.5);
+            transition: 0.15s;
+        }
+        .ability-slot.active {
+            border-color: #ffd966; background: rgba(80,60,20,0.8);
+            box-shadow: 0 0 12px rgba(255,200,50,0.6), inset 0 2px 6px rgba(0,0,0,0.5);
+        }
+        .ability-slot .key-hint {
+            position: absolute; bottom: -2px; right: 2px; font-size: 0.5rem;
+            color: #8fa8ff; font-weight: bold; letter-spacing: 0.5px;
+        }
+        .ability-slot .count-badge {
+            position: absolute; top: -4px; right: -4px; background: #4aff4a; color: #0a2a0a;
+            font-size: 0.55rem; font-weight: bold; padding: 1px 4px; border-radius: 8px;
+            min-width: 14px; text-align: center; display: none;
+        }
+        .ability-slot.has-count .count-badge { display: block; }
+        .touch-controls { display: none; width: 100%; margin-top: 10px; gap: 10px; justify-content: space-between; align-items: center; }
+        .dpad { display: flex; flex-direction: column; align-items: center; gap: 3px; }
+        .dpad-row { display: flex; gap: 3px; }
+        .touch-btn {
+            background: #2a2a4a; color: #d0d4ff; border: none; font-size: 1.3rem; font-weight: bold;
+            border-radius: 12px; box-shadow: 0 5px 0 #0d0d18, 0 6px 10px black, inset 0 2px 4px rgba(255,255,255,0.05);
+            cursor: pointer; transition: 0.05s ease; font-family: inherit; touch-action: manipulation;
+            width: 52px; height: 52px; display: flex; align-items: center; justify-content: center;
+            -webkit-touch-callout: none;
+        }
+        .touch-btn:active, .touch-btn.pressed {
+            transform: translateY(4px); box-shadow: 0 1px 0 #0d0d18, 0 3px 8px black, inset 0 2px 4px rgba(255,255,255,0.1);
+            background: #3a3a6a; color: #ffffff;
+        }
+        .action-btn { width: 68px; height: 68px; border-radius: 50%; font-size: 0.75rem; background: #4a2a2a; color: #ffb0b0; letter-spacing: 1px; }
+        .action-btn:active, .action-btn.pressed { background: #6a3a3a; color: #ffffff; }
+        .arrest-btn { background: #2a4a2a; color: #b0ffb0; }
+        .arrest-btn:active, .arrest-btn.pressed { background: #3a6a3a; color: #ffffff; }
+        .screen-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(5,5,15,0.94); display: flex; align-items: center; justify-content: center;
+            z-index: 100; padding: 12px; backdrop-filter: blur(6px); transition: opacity 0.4s; overflow-y: auto;
+        }
+        .screen-overlay.hidden { opacity: 0; pointer-events: none; }
+        .modal-card {
+            background: linear-gradient(160deg, #1a1a2e, #12121e); border: 2px solid #3a3a6a;
+            border-radius: 20px; padding: 20px 18px; max-width: 700px; width: 100%; max-height: 94vh;
+            overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.95), inset 0 1px 0 rgba(255,255,255,0.1);
+            text-align: center; color: #d0d8ff;
+        }
+        .modal-card h1 {
+            font-size: 1.4rem; letter-spacing: 3px; color: #ffd966;
+            text-shadow: 0 0 20px rgba(255,200,50,0.6); margin-bottom: 4px;
+        }
+        .modal-card h2 {
+            font-size: 0.9rem; letter-spacing: 2px; color: #8fa8ff; margin-bottom: 14px;
+            text-shadow: 0 0 10px rgba(100,130,255,0.4);
+        }
+        .story-text {
+            font-size: 0.8rem; line-height: 1.6; color: #b8c4e8; text-align: left;
+            background: rgba(0,0,0,0.35); padding: 14px 16px; border-radius: 14px;
+            border-left: 4px solid #ffd966; margin-bottom: 16px; letter-spacing: 0.3px;
+        }
+        .story-text .hl { color: #ffd966; font-weight: bold; }
+        .story-text .hlr { color: #ff8888; font-weight: bold; }
+        .story-text .hlg { color: #4aff4a; font-weight: bold; }
+        .section-label {
+            font-size: 0.82rem; letter-spacing: 2px; color: #8fa8ff; margin: 14px 0 8px;
+            text-transform: uppercase; font-weight: bold; text-align: left;
+        }
+        .section-label:first-of-type { margin-top: 0; }
+        .env-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 8px; }
+        .env-option {
+            background: #1e1e34; border: 2px solid #3a3a6a; border-radius: 12px; padding: 14px 4px;
+            cursor: pointer; transition: 0.15s ease; color: #d0d8ff; font-family: inherit;
+            font-weight: bold; font-size: 1.5rem; touch-action: manipulation;
+            box-shadow: 0 4px 0 #0d0d18; line-height: 1.1;
+        }
+        .env-option .env-name {
+            display: block; font-size: 0.62rem; color: #8fa8ff; margin-top: 4px; letter-spacing: 1px;
+        }
+        .env-option.selected {
+            background: linear-gradient(160deg, #1a3a2a, #1a4a3a); border-color: #4aff8a;
+            color: #b0ffd0; box-shadow: 0 4px 0 #0a5a2a, 0 0 18px rgba(74,255,138,0.5);
+        }
+        .env-option.selected .env-name { color: #b0ffd0; }
+        .vehicle-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 8px; }
+        .vehicle-option {
+            background: #1e1e34; border: 2px solid #3a3a6a; border-radius: 12px; padding: 10px 4px;
+            cursor: pointer; transition: 0.15s ease; color: #d0d8ff; font-family: inherit;
+            font-weight: bold; font-size: 1.5rem; touch-action: manipulation;
+            box-shadow: 0 4px 0 #0d0d18; line-height: 1.1;
+        }
+        .vehicle-option .v-name { display: block; font-size: 0.58rem; color: #8fa8ff; margin-top: 3px; letter-spacing: 0.5px; }
+        .vehicle-option .v-stat { display: block; font-size: 0.48rem; color: #6f7f9f; margin-top: 2px; letter-spacing: 0.3px; }
+        .vehicle-option.selected {
+            background: linear-gradient(160deg, #2a1a3a, #3a2a4a); border-color: #d966ff;
+            color: #f0d0ff; box-shadow: 0 4px 0 #5a1a7a, 0 0 18px rgba(217,102,255,0.5);
+        }
+        .vehicle-option.selected .v-name { color: #f0d0ff; }
+        .vehicle-option.selected .v-stat { color: #d0a0ff; }
+        .timer-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 8px; }
+        .timer-option {
+            background: #1e1e34; border: 2px solid #3a3a6a; border-radius: 12px; padding: 12px 4px;
+            cursor: pointer; transition: 0.15s ease; color: #d0d8ff; font-family: inherit;
+            font-weight: bold; font-size: 0.9rem; letter-spacing: 1px; touch-action: manipulation;
+            box-shadow: 0 4px 0 #0d0d18;
+        }
+        .timer-option.selected {
+            background: linear-gradient(160deg, #3a2a1a, #4a3a1a); border-color: #ffd966;
+            color: #ffd966; box-shadow: 0 4px 0 #7a5a10, 0 0 18px rgba(255,200,50,0.5);
+        }
+        .timer-option .sub { display: block; font-size: 0.55rem; color: #8fa8ff; margin-top: 3px; letter-spacing: 1px; }
+        .timer-option.selected .sub { color: #ffd966; }
+        .play-btn {
+            background: linear-gradient(160deg, #4aff4a, #2ab82a); color: #0a2a0a; border: none;
+            padding: 13px 32px; font-size: 1rem; font-weight: bold; border-radius: 40px;
+            letter-spacing: 3px; cursor: pointer; font-family: inherit; text-transform: uppercase;
+            box-shadow: 0 6px 0 #146614, 0 8px 20px rgba(74,255,74,0.3); transition: 0.1s ease;
+            touch-action: manipulation; width: 100%; max-width: 320px; margin-top: 8px;
+        }
+        .play-btn:active { transform: translateY(5px); box-shadow: 0 1px 0 #146614, 0 4px 12px rgba(74,255,74,0.3); }
+        .modal-credit {
+            margin-top: 16px; font-size: 0.75rem; letter-spacing: 3px; color: #ffd966;
+            font-weight: bold; text-shadow: 0 0 10px rgba(255,200,50,0.5);
+        }
+        .modal-credit::before { content: '★ '; }
+        .modal-credit::after { content: ' ★'; }
+        .selection-summary {
+            background: rgba(0,0,0,0.4); border-radius: 12px; padding: 10px 14px; margin-top: 10px;
+            font-size: 0.7rem; color: #b8c4e8; letter-spacing: 1px; line-height: 1.6;
+            text-align: left; border: 1px solid #2a2a4a;
+        }
+        .selection-summary .sum-hl { color: #ffd966; font-weight: bold; }
+        .nav-buttons { display: flex; gap: 10px; margin-top: 12px; }
+        .nav-btn {
+            flex: 1; background: #2c2c54; color: #d0d4ff; border: none; padding: 11px;
+            font-size: 0.8rem; font-weight: bold; border-radius: 30px; letter-spacing: 1.5px;
+            box-shadow: 0 5px 0 #0d0d18, 0 6px 10px black; cursor: pointer; transition: 0.07s ease;
+            font-family: inherit; text-transform: uppercase; touch-action: manipulation;
+        }
+        .nav-btn:active { transform: translateY(4px); box-shadow: 0 1px 0 #0d0d18, 0 3px 8px black; }
+        .nav-btn.primary { background: #2c5440; color: #d0ffd8; box-shadow: 0 5px 0 #0d1d0d, 0 6px 10px black; }
+        .coin-display {
+            background: linear-gradient(160deg, #4a3a1a, #3a2a0a); border: 2px solid #ffd966;
+            border-radius: 30px; padding: 8px 20px; display: inline-flex; align-items: center;
+            gap: 8px; font-size: 1rem; font-weight: bold; color: #ffd966; letter-spacing: 2px;
+            margin-bottom: 14px; box-shadow: 0 0 20px rgba(255,200,50,0.4);
+        }
+        .shop-items {
+            display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px;
+            max-height: 48vh; overflow-y: auto; padding: 4px; margin-bottom: 10px;
+        }
+        .shop-item {
+            background: #1a1a2e; border: 2px solid #3a3a6a; border-radius: 14px;
+            padding: 10px 8px; display: flex; flex-direction: column; align-items: center;
+            gap: 4px; transition: 0.15s ease; position: relative; min-height: 130px;
+        }
+        .shop-item.owned { border-color: #4aff4a; background: rgba(20,40,20,0.5); }
+        .shop-item.maxed { border-color: #ffd966; background: rgba(40,30,10,0.5); }
+        .shop-item .item-icon { font-size: 1.8rem; line-height: 1; }
+        .shop-item .item-name { font-size: 0.65rem; font-weight: bold; color: #d0d8ff; letter-spacing: 0.5px; text-align: center; line-height: 1.2; }
+        .shop-item .item-desc { font-size: 0.5rem; color: #8fa8ff; text-align: center; letter-spacing: 0.3px; line-height: 1.3; min-height: 26px; }
+        .shop-item .item-level { font-size: 0.55rem; color: #ffd966; font-weight: bold; letter-spacing: 1px; }
+        .shop-item .buy-btn {
+            background: linear-gradient(160deg, #4aff4a, #2ab82a); color: #0a2a0a; border: none;
+            padding: 5px 14px; font-size: 0.65rem; font-weight: bold; border-radius: 20px;
+            letter-spacing: 1px; cursor: pointer; font-family: inherit; text-transform: uppercase;
+            touch-action: manipulation; box-shadow: 0 3px 0 #146614; transition: 0.1s; margin-top: auto;
+        }
+        .shop-item .buy-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 #146614; }
+        .shop-item .buy-btn:disabled { background: #2a2a3a; color: #5f6f8f; box-shadow: 0 3px 0 #0d0d18; cursor: not-allowed; }
+        .shop-item .buy-btn.upgrade { background: linear-gradient(160deg, #ffd966, #ffaa33); color: #2a1a0a; box-shadow: 0 3px 0 #7a5a10; }
+        .shop-item .item-badge {
+            position: absolute; top: -6px; right: -6px; background: #4aff4a; color: #0a2a0a;
+            font-size: 0.5rem; font-weight: bold; padding: 2px 6px; border-radius: 8px; letter-spacing: 0.5px;
+        }
+        .coin-toast {
+            position: fixed; top: 20%; left: 50%; transform: translateX(-50%) translateY(-20px);
+            background: linear-gradient(160deg, #4a3a1a, #3a2a0a); border: 2px solid #ffd966;
+            color: #ffd966; padding: 10px 24px; border-radius: 30px; font-size: 1rem;
+            font-weight: bold; letter-spacing: 2px; opacity: 0; pointer-events: none;
+            transition: opacity 0.3s, transform 0.3s; z-index: 200;
+            box-shadow: 0 0 30px rgba(255,200,50,0.6);
+        }
+        .coin-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+        @media (pointer: coarse), (max-width: 750px) {
+            .touch-controls { display: flex; }
+            .hint { display: none; }
+            .game-wrapper { padding: 8px 8px 12px; }
+            .credit-sign { top: -12px; right: 10px; font-size: 0.55rem; padding: 4px 10px; }
+            .modal-card h1 { font-size: 1.15rem; }
+            .story-text { font-size: 0.72rem; }
+            .timer-grid { grid-template-columns: repeat(3, 1fr); }
+            .vehicle-grid { grid-template-columns: repeat(2, 1fr); }
+            .shop-items { grid-template-columns: repeat(2, 1fr); }
+            .info-panel { font-size: 0.65rem; }
+            .stat-box { padding: 4px 7px; }
+            .stat-box span { font-size: 0.9rem; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ===== INTRO STORY ===== -->
+<div class="screen-overlay" id="storyScreen">
+    <div class="modal-card">
+        <h1>POLICE & ROBBER</h1>
+        <h2>— PROLOGUE —</h2>
+        <div class="story-text">
+            The city of <span class="hl">Nova Heights</span> was once peaceful...<br><br>
+            But everything changed when the <span class="hlr">Crimson Crew</span> — a ruthless gang of robbers — broke out of Blackgate Prison. They spread across the city, looting banks, robbing stores, and terrorizing innocent people.<br><br>
+            <span class="hl">That's you.</span> You are <span class="hl">Officer Atif</span>, the youngest cop on the force. Your mission: <span class="hl">arrest robbers</span> before time runs out.<br><br>
+            <span class="hlg">NEW:</span> The <span class="hlg">GREEN CIRCLE</span> around your vehicle is your <span class="hlg">arrest range</span>. Upgrade the <span class="hlg">BIGGER CIRCLE</span> in the shop to make the green circle larger and catch robbers from further away!<br><br>
+            Earn <span class="hl">coins</span> from every mission. Buy gadgets like the <span class="hl">Grapple Hook</span>, <span class="hl">Portal Gun</span>, and <span class="hl">Time Freeze</span>.<br><br>
+            <span class="hl">Good luck, Officer.</span>
+        </div>
+        <button class="play-btn" id="storyContinueBtn">CONTINUE ➜</button>
+        <div class="modal-credit">MADE BY IBRAHIM ATIF</div>
+    </div>
+</div>
+
+<!-- ===== ENVIRONMENT SELECT ===== -->
+<div class="screen-overlay hidden" id="envScreen">
+    <div class="modal-card">
+        <h1>CHOOSE ENVIRONMENT</h1>
+        <h2>— SELECT YOUR BATTLEGROUND —</h2>
+        <div class="section-label">Environment</div>
+        <div class="env-grid" id="envGrid">
+            <button class="env-option selected" data-env="land">🏙️<span class="env-name">LAND CITY</span></button>
+            <button class="env-option" data-env="water">🌊<span class="env-name">WATER BAY</span></button>
+            <button class="env-option" data-env="air">☁️<span class="env-name">AIR ZONE</span></button>
+        </div>
+        <div class="selection-summary" id="envSummary"></div>
+        <div class="nav-buttons">
+            <button class="nav-btn" id="envBackBtn">◀ BACK</button>
+            <button class="nav-btn primary" id="envNextBtn">NEXT ➜</button>
+        </div>
+        <div class="modal-credit">MADE BY IBRAHIM ATIF</div>
+    </div>
+</div>
+
+<!-- ===== VEHICLE SELECT ===== -->
+<div class="screen-overlay hidden" id="vehicleScreen">
+    <div class="modal-card">
+        <h1>CHOOSE VEHICLE</h1>
+        <h2>— SELECT YOUR PATROL UNIT —</h2>
+        <div class="section-label">Available Vehicles</div>
+        <div class="vehicle-grid" id="vehicleGrid"></div>
+        <div class="selection-summary" id="vehicleSummary"></div>
+        <div class="nav-buttons">
+            <button class="nav-btn" id="vehicleBackBtn">◀ BACK</button>
+            <button class="nav-btn primary" id="vehicleNextBtn">NEXT ➜</button>
+        </div>
+        <div class="mo
