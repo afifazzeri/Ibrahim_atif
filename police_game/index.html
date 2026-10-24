@@ -312,4 +312,1482 @@
             <button class="nav-btn" id="vehicleBackBtn">◀ BACK</button>
             <button class="nav-btn primary" id="vehicleNextBtn">NEXT ➜</button>
         </div>
-        <div class="mo
+        <div class="modal-credit">MADE BY IBRAHIM ATIF</div>
+    </div>
+</div>
+
+<!-- ===== SHOP ===== -->
+<div class="screen-overlay hidden" id="shopScreen">
+    <div class="modal-card">
+        <h1>🛒 BLACK MARKET</h1>
+        <h2>— UNLOCK & UPGRADE —</h2>
+        <div class="coin-display">🪙 <span id="shopCoins">0</span> COINS</div>
+        <div class="section-label">Upgrades & Gadgets</div>
+        <div class="shop-items" id="shopItems"></div>
+        <div class="nav-buttons">
+            <button class="nav-btn" id="shopBackBtn">◀ BACK</button>
+            <button class="nav-btn primary" id="shopContinueBtn">CONTINUE ➜</button>
+        </div>
+        <div class="modal-credit">MADE BY IBRAHIM ATIF</div>
+    </div>
+</div>
+
+<!-- ===== TIMER SELECT ===== -->
+<div class="screen-overlay hidden" id="timerScreen">
+    <div class="modal-card">
+        <h1>CHOOSE YOUR MISSION</h1>
+        <h2>— SELECT TIME LIMIT —</h2>
+        <div class="section-label">Mission Duration</div>
+        <div class="timer-grid" id="timerGrid">
+            <button class="timer-option" data-time="1">1 MIN<span class="sub">Blitz</span></button>
+            <button class="timer-option" data-time="3">3 MIN<span class="sub">Quick</span></button>
+            <button class="timer-option selected" data-time="5">5 MIN<span class="sub">Standard</span></button>
+            <button class="timer-option" data-time="10">10 MIN<span class="sub">Extended</span></button>
+            <button class="timer-option" data-time="13">13 MIN<span class="sub">Marathon</span></button>
+        </div>
+        <div class="selection-summary" id="missionSummary"></div>
+        <div class="nav-buttons">
+            <button class="nav-btn" id="timerBackBtn">◀ BACK</button>
+            <button class="nav-btn primary" id="startGameBtn">START 🚔</button>
+        </div>
+        <div class="modal-credit">MADE BY IBRAHIM ATIF</div>
+    </div>
+</div>
+
+<!-- ===== GAME ===== -->
+<div class="game-wrapper" id="gameWrapper" style="display:none;">
+    <div class="credit-sign">Made by Ibrahim Atif</div>
+    <canvas id="gameCanvas" width="720" height="480"></canvas>
+    <div class="info-panel">
+        <div class="stat-box">💰 <span id="scoreDisplay">0</span></div>
+        <div class="stat-box">🪙 <span id="coinsDisplay">0</span></div>
+        <div class="stat-box">🚔 <span id="arrestsDisplay">0</span></div>
+        <div class="stat-box wanted-box">⭐ <span id="wantedDisplay">1</span></div>
+        <div class="stat-box">⏱ <span id="timerDisplay">5:00</span></div>
+        <button class="restart-btn menu-btn" id="menuButton">☰</button>
+        <button class="restart-btn" id="restartButton">↻</button>
+    </div>
+    <div class="ability-bar" id="abilityBar">
+        <div class="ability-slot" id="slot1" title="Empty"><span class="key-hint">1</span><span class="count-badge">0</span></div>
+        <div class="ability-slot" id="slot2" title="Empty"><span class="key-hint">2</span><span class="count-badge">0</span></div>
+        <div class="ability-slot" id="slot3" title="Empty"><span class="key-hint">3</span><span class="count-badge">0</span></div>
+    </div>
+    <div class="touch-controls" id="touchControls">
+        <div class="dpad">
+            <div class="dpad-row">
+                <div style="width:52px;"></div>
+                <button class="touch-btn" id="upBtn" aria-label="Move up">▲</button>
+                <div style="width:52px;"></div>
+            </div>
+            <div class="dpad-row">
+                <button class="touch-btn" id="leftBtn" aria-label="Move left">◀</button>
+                <button class="touch-btn" id="downBtn" aria-label="Move down">▼</button>
+                <button class="touch-btn" id="rightBtn" aria-label="Move right">▶</button>
+            </div>
+        </div>
+        <div style="display:flex; gap:6px; align-items:center;">
+            <button class="touch-btn action-btn" id="item1Btn" style="font-size:1.4rem;">1</button>
+            <button class="touch-btn action-btn" id="item2Btn" style="font-size:1.4rem;">2</button>
+            <button class="touch-btn action-btn arrest-btn" id="arrestBtn" aria-label="Arrest">🚔</button>
+        </div>
+    </div>
+    <div class="hint">WASD / Arrows move &nbsp;|&nbsp; SPACE arrest &nbsp;|&nbsp; 1/2 use items &nbsp;|&nbsp; Right-click for grapple</div>
+    <div class="footer-credit">★ MADE BY IBRAHIM ATIF ★</div>
+</div>
+
+<div class="coin-toast" id="coinToast">🪙 +0 COINS</div>
+
+<script>
+    (function() {
+        // ===== ELEMENTS =====
+        const storyScreen = document.getElementById('storyScreen');
+        const envScreen = document.getElementById('envScreen');
+        const vehicleScreen = document.getElementById('vehicleScreen');
+        const shopScreen = document.getElementById('shopScreen');
+        const timerScreen = document.getElementById('timerScreen');
+        const gameWrapper = document.getElementById('gameWrapper');
+
+        const storyContinueBtn = document.getElementById('storyContinueBtn');
+        const envBackBtn = document.getElementById('envBackBtn');
+        const envNextBtn = document.getElementById('envNextBtn');
+        const vehicleBackBtn = document.getElementById('vehicleBackBtn');
+        const vehicleNextBtn = document.getElementById('vehicleNextBtn');
+        const shopBackBtn = document.getElementById('shopBackBtn');
+        const shopContinueBtn = document.getElementById('shopContinueBtn');
+        const timerBackBtn = document.getElementById('timerBackBtn');
+        const startGameBtn = document.getElementById('startGameBtn');
+
+        const envGrid = document.getElementById('envGrid');
+        const vehicleGrid = document.getElementById('vehicleGrid');
+        const timerGrid = document.getElementById('timerGrid');
+        const shopItems = document.getElementById('shopItems');
+        const shopCoins = document.getElementById('shopCoins');
+        const coinToast = document.getElementById('coinToast');
+
+        const envSummary = document.getElementById('envSummary');
+        const vehicleSummary = document.getElementById('vehicleSummary');
+        const missionSummary = document.getElementById('missionSummary');
+
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const scoreSpan = document.getElementById('scoreDisplay');
+        const coinsSpan = document.getElementById('coinsDisplay');
+        const arrestsSpan = document.getElementById('arrestsDisplay');
+        const wantedSpan = document.getElementById('wantedDisplay');
+        const timerSpan = document.getElementById('timerDisplay');
+        const restartBtn = document.getElementById('restartButton');
+        const menuButton = document.getElementById('menuButton');
+        const leftBtn = document.getElementById('leftBtn');
+        const rightBtn = document.getElementById('rightBtn');
+        const upBtn = document.getElementById('upBtn');
+        const downBtn = document.getElementById('downBtn');
+        const arrestBtn = document.getElementById('arrestBtn');
+        const item1Btn = document.getElementById('item1Btn');
+        const item2Btn = document.getElementById('item2Btn');
+
+        const slot1 = document.getElementById('slot1');
+        const slot2 = document.getElementById('slot2');
+        const slot3 = document.getElementById('slot3');
+
+        // ===== PERSISTENT DATA =====
+        let coins = parseInt(localStorage.getItem('policeCoins') || '0');
+        let ownedItems = JSON.parse(localStorage.getItem('policeOwnedItems') || '{}');
+        let vehicleUpgrades = JSON.parse(localStorage.getItem('vehicleUpgrades') || '{"speed":0,"arrestRange":0}');
+
+        function saveData() {
+            localStorage.setItem('policeCoins', coins);
+            localStorage.setItem('policeOwnedItems', JSON.stringify(ownedItems));
+            localStorage.setItem('vehicleUpgrades', JSON.stringify(vehicleUpgrades));
+        }
+
+        // ===== SHOP ITEMS =====
+        const SHOP_ITEMS = {
+            grapple: {
+                id: 'grapple', icon: '🪝', name: 'Grapple Hook',
+                desc: 'Press 1 to launch. Pulls you toward your aim point.',
+                maxLevel: 3, prices: [50, 120, 250],
+                levels: ['Range: 150px', 'Range: 220px', 'Range: 300px + pulls robbers']
+            },
+            portal: {
+                id: 'portal', icon: '🌀', name: 'Portal Gun',
+                desc: 'Press 2 to shoot a portal. Press again to teleport.',
+                maxLevel: 2, prices: [150, 400],
+                levels: ['Teleport to portal location', 'Teleport + brief invincibility']
+            },
+            timefreeze: {
+                id: 'timefreeze', icon: '⏱️', name: 'Time Freeze',
+                desc: 'Press 3 to slow all robbers for 5 seconds.',
+                maxLevel: 2, prices: [200, 500],
+                levels: ['Slow robbers 5s', 'Slow robbers 8s + faster cooldown']
+            },
+            magnet: {
+                id: 'magnet', icon: '🧲', name: 'Money Magnet',
+                desc: 'Passive: automatically pull nearby money bags.',
+                maxLevel: 2, prices: [100, 300],
+                levels: ['Pull radius: 80px', 'Pull radius: 150px']
+            }
+        };
+
+        // ===== SELECTION STATE =====
+        let selectedEnv = 'land';
+        let selectedVehicle = 'car';
+        let selectedTime = 5;
+
+        const VEHICLES = {
+            land: [
+                { id: 'car',        icon: '🚔', name: 'Police Car',   speed: 3.6, radius: 15, color: '#ffffff', stripe: '#1a3a8a', desc: 'Speed ★★★☆☆ | Handling ★★★★☆' },
+                { id: 'motorcycle', icon: '🏍️', name: 'Motorcycle',  speed: 4.8, radius: 11, color: '#1a1a1a', stripe: '#ffd966', desc: 'Speed ★★★★★ | Handling ★★★★★' },
+                { id: 'truck',      icon: '🚚', name: 'Police Truck', speed: 2.8, radius: 19, color: '#2a4a8a', stripe: '#ffffff', desc: 'Speed ★★☆☆☆ | Handling ★★☆☆☆' }
+            ],
+            water: [
+                { id: 'boat',       icon: '🚤', name: 'Patrol Boat',  speed: 4.0, radius: 16, color: '#ffffff', stripe: '#1a3a8a', desc: 'Speed ★★★★☆ | Handling ★★★☆☆' },
+                { id: 'speedboat',  icon: '🛥️', name: 'Speed Boat',  speed: 5.0, radius: 14, color: '#ffd966', stripe: '#1a3a8a', desc: 'Speed ★★★★★ | Handling ★★★★☆' },
+                { id: 'hovercraft', icon: '🛸', name: 'Hovercraft',   speed: 3.8, radius: 17, color: '#a0d0ff', stripe: '#1a3a8a', desc: 'Speed ★★★★☆ | Handling ★★★☆☆' }
+            ],
+            air: [
+                { id: 'helicopter', icon: '🚁', name: 'Helicopter',   speed: 4.5, radius: 16, color: '#1a3a8a', stripe: '#ffd966', desc: 'Speed ★★★★☆ | Handling ★★★★☆' },
+                { id: 'jet',        icon: '✈️', name: 'Police Jet',   speed: 5.5, radius: 14, color: '#ffffff', stripe: '#1a3a8a', desc: 'Speed ★★★★★ | Handling ★★★☆☆' },
+                { id: 'drone',      icon: '🛩️', name: 'Surveillance', speed: 3.5, radius: 12, color: '#4a8a4a', stripe: '#ffffff', desc: 'Speed ★★★☆☆ | Handling ★★★★★' }
+            ]
+        };
+
+        const ENV_DESC = {
+            land: 'Streets, buildings, and alleys. Classic pursuit.',
+            water: 'Open water with docks and boats. Watch for waves.',
+            air: 'Skies above the city. Fly freely and spot robbers from above.'
+        };
+
+        // ===== ARREST RANGE UPGRADE =====
+        // The "Bigger Circle" upgrade increases the GREEN ARREST CIRCLE only
+        const BASE_ARREST_RANGE = 45;
+        function getArrestRange() {
+            return BASE_ARREST_RANGE * (1 + (vehicleUpgrades.arrestRange || 0) * 0.25);
+        }
+
+        // ===== SCREEN FLOW =====
+        function showScreen(screen) {
+            [storyScreen, envScreen, vehicleScreen, shopScreen, timerScreen].forEach(s => s.classList.add('hidden'));
+            if (screen) screen.classList.remove('hidden');
+        }
+
+        function showCoinToast(amount) {
+            coinToast.textContent = '🪙 ' + (amount > 0 ? '+' : '') + amount + ' COINS';
+            coinToast.style.color = amount > 0 ? '#4aff4a' : '#ffd966';
+            coinToast.classList.add('show');
+            setTimeout(() => coinToast.classList.remove('show'), 1500);
+        }
+
+        storyContinueBtn.addEventListener('click', () => { showScreen(envScreen); updateEnvSummary(); });
+        storyContinueBtn.addEventListener('touchstart', (e) => { e.preventDefault(); showScreen(envScreen); updateEnvSummary(); }, { passive: false });
+
+        // Environment
+        envGrid.querySelectorAll('.env-option').forEach(btn => {
+            const select = (e) => {
+                e.preventDefault();
+                envGrid.querySelectorAll('.env-option').forEach(b => b.classList.remove('selected'));
+                btn.classList.add('selected');
+                selectedEnv = btn.dataset.env;
+                selectedVehicle = VEHICLES[selectedEnv][0].id;
+                updateEnvSummary();
+            };
+            btn.addEventListener('click', select);
+            btn.addEventListener('touchstart', select, { passive: false });
+        });
+
+        function updateEnvSummary() {
+            const envName = selectedEnv === 'land' ? '🏙️ Land City' : selectedEnv === 'water' ? '🌊 Water Bay' : '☁️ Air Zone';
+            envSummary.innerHTML = 'Environment: <span class="sum-hl">' + envName + '</span> — ' + ENV_DESC[selectedEnv];
+        }
+
+        envBackBtn.addEventListener('click', () => showScreen(storyScreen));
+        envBackBtn.addEventListener('touchstart', (e) => { e.preventDefault(); showScreen(storyScreen); }, { passive: false });
+        envNextBtn.addEventListener('click', () => { buildVehicleGrid(); showScreen(vehicleScreen); });
+        envNextBtn.addEventListener('touchstart', (e) => { e.preventDefault(); buildVehicleGrid(); showScreen(vehicleScreen); }, { passive: false });
+
+        // Vehicle
+        function buildVehicleGrid() {
+            vehicleGrid.innerHTML = '';
+            VEHICLES[selectedEnv].forEach(v => {
+                const btn = document.createElement('button');
+                btn.className = 'vehicle-option' + (v.id === selectedVehicle ? ' selected' : '');
+                btn.dataset.vehicle = v.id;
+                btn.innerHTML = v.icon + '<span class="v-name">' + v.name + '</span><span class="v-stat">' + v.desc + '</span>';
+                const select = (e) => {
+                    e.preventDefault();
+                    vehicleGrid.querySelectorAll('.vehicle-option').forEach(b => b.classList.remove('selected'));
+                    btn.classList.add('selected');
+                    selectedVehicle = v.id;
+                    updateVehicleSummary();
+                };
+                btn.addEventListener('click', select);
+                btn.addEventListener('touchstart', select, { passive: false });
+                vehicleGrid.appendChild(btn);
+            });
+            updateVehicleSummary();
+        }
+
+        function updateVehicleSummary() {
+            const v = VEHICLES[selectedEnv].find(x => x.id === selectedVehicle) || VEHICLES[selectedEnv][0];
+            const speedBonus = vehicleUpgrades.speed * 15;
+            const arrestBonus = Math.round((vehicleUpgrades.arrestRange || 0) * 25);
+            vehicleSummary.innerHTML = 'Vehicle: <span class="sum-hl">' + v.icon + ' ' + v.name + '</span> — ' + v.desc +
+                '<br>Upgrades: <span class="sum-hl">+'+speedBonus+'% Speed</span> | <span class="sum-hl" style="color:#4aff4a;">+'+arrestBonus+'% Arrest Range</span>';
+        }
+
+        vehicleBackBtn.addEventListener('click', () => showScreen(envScreen));
+        vehicleBackBtn.addEventListener('touchstart', (e) => { e.preventDefault(); showScreen(envScreen); }, { passive: false });
+        vehicleNextBtn.addEventListener('click', () => { buildShopItems(); showScreen(shopScreen); });
+        vehicleNextBtn.addEventListener('touchstart', (e) => { e.preventDefault(); buildShopItems(); showScreen(shopScreen); }, { passive: false });
+
+        // ===== SHOP =====
+        function updateCoinDisplays() {
+            shopCoins.textContent = coins;
+            coinsSpan.textContent = coins;
+        }
+
+        function buildShopItems() {
+            updateCoinDisplays();
+            shopItems.innerHTML = '';
+
+            // Speed upgrade
+            const speedLevel = vehicleUpgrades.speed || 0;
+            const speedPrice = 80 * (speedLevel + 1);
+            const speedMaxed = speedLevel >= 5;
+            const speedDiv = document.createElement('div');
+            speedDiv.className = 'shop-item' + (speedMaxed ? ' maxed' : (speedLevel > 0 ? ' owned' : ''));
+            speedDiv.innerHTML =
+                (speedMaxed ? '<span class="item-badge">MAX</span>' : '') +
+                '<span class="item-icon">💨</span>' +
+                '<span class="item-name">Speed Boost</span>' +
+                '<span class="item-desc">Increases vehicle speed by 15% per level</span>' +
+                '<span class="item-level">Level ' + speedLevel + '/5</span>' +
+                '<button class="buy-btn ' + (speedLevel > 0 && !speedMaxed ? 'upgrade' : '') + '" ' + (speedMaxed ? 'disabled' : '') + '>' +
+                    (speedMaxed ? '✓ MAXED' : '⬆ UPGRADE 🪙' + speedPrice) +
+                '</button>';
+            const speedBtn = speedDiv.querySelector('.buy-btn');
+            if (!speedMaxed) {
+                const buy = (e) => {
+                    e.preventDefault();
+                    if (coins >= speedPrice) {
+                        coins -= speedPrice;
+                        vehicleUpgrades.speed = speedLevel + 1;
+                        saveData(); updateCoinDisplays(); showCoinToast(-speedPrice);
+                        buildShopItems(); updateVehicleSummary();
+                    }
+                };
+                speedBtn.addEventListener('click', buy);
+                speedBtn.addEventListener('touchstart', buy, { passive: false });
+            }
+            shopItems.appendChild(speedDiv);
+
+            // ===== BIGGER CIRCLE — ARREST RANGE UPGRADE =====
+            const arrestLevel = vehicleUpgrades.arrestRange || 0;
+            const arrestPrice = 60 * (arrestLevel + 1);
+            const arrestMaxed = arrestLevel >= 5;
+            const arrestDiv = document.createElement('div');
+            arrestDiv.className = 'shop-item' + (arrestMaxed ? ' maxed' : (arrestLevel > 0 ? ' owned' : ''));
+            arrestDiv.style.borderColor = '#4aff4a';
+            arrestDiv.innerHTML =
+                (arrestMaxed ? '<span class="item-badge">MAX</span>' : '') +
+                '<span class="item-icon" style="font-size:1.8rem;color:#4aff4a;">🟢</span>' +
+                '<span class="item-name">Bigger Circle</span>' +
+                '<span class="item-desc">Increases the GREEN arrest range circle by 25% per level</span>' +
+                '<span class="item-level" style="color:#4aff4a;">Level ' + arrestLevel + '/5 · +' + (arrestLevel * 25) + '% range</span>' +
+                '<button class="buy-btn ' + (arrestLevel > 0 && !arrestMaxed ? 'upgrade' : '') + '" style="background:linear-gradient(160deg,#4aff4a,#2ab82a);color:#0a2a0a;" ' + (arrestMaxed ? 'disabled' : '') + '>' +
+                    (arrestMaxed ? '✓ MAXED' : '⬆ UPGRADE 🪙' + arrestPrice) +
+                '</button>';
+            const arrestBtn2 = arrestDiv.querySelector('.buy-btn');
+            if (!arrestMaxed) {
+                const buy = (e) => {
+                    e.preventDefault();
+                    if (coins >= arrestPrice) {
+                        coins -= arrestPrice;
+                        vehicleUpgrades.arrestRange = arrestLevel + 1;
+                        saveData(); updateCoinDisplays(); showCoinToast(-arrestPrice);
+                        buildShopItems(); updateVehicleSummary();
+                    }
+                };
+                arrestBtn2.addEventListener('click', buy);
+                arrestBtn2.addEventListener('touchstart', buy, { passive: false });
+            }
+            shopItems.appendChild(arrestDiv);
+
+            // Gadgets
+            Object.values(SHOP_ITEMS).forEach(item => {
+                const level = ownedItems[item.id] || 0;
+                const maxed = level >= item.maxLevel;
+                const cost = maxed ? 0 : item.prices[level];
+                const owned = level > 0;
+                const div = document.createElement('div');
+                div.className = 'shop-item' + (maxed ? ' maxed' : (owned ? ' owned' : ''));
+                div.innerHTML =
+                    (maxed ? '<span class="item-badge">MAX</span>' : '') +
+                    '<span class="item-icon">' + item.icon + '</span>' +
+                    '<span class="item-name">' + item.name + '</span>' +
+                    '<span class="item-desc">' + (owned ? item.levels[level-1] : item.desc) + '</span>' +
+                    '<span class="item-level">' + (owned ? 'Level ' + level + '/' + item.maxLevel : 'Not owned') + '</span>' +
+                    '<button class="buy-btn ' + (owned && !maxed ? 'upgrade' : '') + '" ' + (maxed ? 'disabled' : '') + '>' +
+                        (maxed ? '✓ MAXED' : (owned ? '⬆ UPGRADE 🪙' + cost : '🛒 BUY 🪙' + cost)) +
+                    '</button>';
+                const btn = div.querySelector('.buy-btn');
+                if (!maxed) {
+                    const buy = (e) => {
+                        e.preventDefault();
+                        if (coins >= cost) {
+                            coins -= cost;
+                            ownedItems[item.id] = level + 1;
+                            saveData(); updateCoinDisplays(); showCoinToast(-cost);
+                            buildShopItems();
+                        }
+                    };
+                    btn.addEventListener('click', buy);
+                    btn.addEventListener('touchstart', buy, { passive: false });
+                }
+                shopItems.appendChild(div);
+            });
+        }
+
+        shopBackBtn.addEventListener('click', () => { buildVehicleGrid(); showScreen(vehicleScreen); });
+        shopBackBtn.addEventListener('touchstart', (e) => { e.preventDefault(); buildVehicleGrid(); showScreen(vehicleScreen); }, { passive: false });
+        shopContinueBtn.addEventListener('click', () => { updateMissionSummary(); showScreen(timerScreen); });
+        shopContinueBtn.addEventListener('touchstart', (e) => { e.preventDefault(); updateMissionSummary(); showScreen(timerScreen); }, { passive: false });
+
+        // ===== TIMER =====
+        timerGrid.querySelectorAll('.timer-option').forEach(btn => {
+            const select = (e) => {
+                e.preventDefault();
+                timerGrid.querySelectorAll('.timer-option').forEach(b => b.classList.remove('selected'));
+                btn.classList.add('selected');
+                selectedTime = parseInt(btn.dataset.time);
+                updateMissionSummary();
+            };
+            btn.addEventListener('click', select);
+            btn.addEventListener('touchstart', select, { passive: false });
+        });
+
+        function updateMissionSummary() {
+            const v = VEHICLES[selectedEnv].find(x => x.id === selectedVehicle) || VEHICLES[selectedEnv][0];
+            const envName = selectedEnv === 'land' ? '🏙️ Land City' : selectedEnv === 'water' ? '🌊 Water Bay' : '☁️ Air Zone';
+            const ownedGadgets = Object.keys(ownedItems).filter(k => ownedItems[k] > 0).length;
+            const arrestBonus = (vehicleUpgrades.arrestRange || 0) * 25;
+            missionSummary.innerHTML =
+                'Environment: <span class="sum-hl">' + envName + '</span><br>' +
+                'Vehicle: <span class="sum-hl">' + v.icon + ' ' + v.name + '</span><br>' +
+                'Arrest Range: <span class="sum-hl" style="color:#4aff4a;">+'+arrestBonus+'% (Lv ' + (vehicleUpgrades.arrestRange || 0) + ')</span><br>' +
+                'Duration: <span class="sum-hl">' + selectedTime + ' minute' + (selectedTime > 1 ? 's' : '') + '</span><br>' +
+                'Gadgets owned: <span class="sum-hl">' + ownedGadgets + '</span> | Coins: <span class="sum-hl">🪙 ' + coins + '</span>';
+        }
+
+        timerBackBtn.addEventListener('click', () => { buildShopItems(); showScreen(shopScreen); });
+        timerBackBtn.addEventListener('touchstart', (e) => { e.preventDefault(); buildShopItems(); showScreen(shopScreen); }, { passive: false });
+        startGameBtn.addEventListener('click', () => { showScreen(null); gameWrapper.style.display = 'flex'; startGame(); });
+        startGameBtn.addEventListener('touchstart', (e) => { e.preventDefault(); showScreen(null); gameWrapper.style.display = 'flex'; startGame(); }, { passive: false });
+
+        // ===== GAME =====
+        const W = canvas.width, H = canvas.height;
+        const GRID_SIZE = 40;
+        const COLS = Math.floor(W / GRID_SIZE);
+        const ROWS = Math.floor(H / GRID_SIZE);
+
+        let cityGrid = [];
+        let PLAYER_RADIUS = 15;
+        let PLAYER_SPEED = 3.6;
+        const BASE_MOVE_ARREST = 45; // green circle base
+
+        const ROBBER_RADIUS = 14;
+        const ROBBER_BASE_SPEED = 2.2;
+
+        let player = {
+            x: W/2, y: H/2, radius: PLAYER_RADIUS, speed: PLAYER_SPEED,
+            facingX: 1, facingY: 0, sirenPhase: 0, isAlive: true,
+            vehicleId: 'car', vehicleColor: '#ffffff', vehicleStripe: '#1a3a8a',
+            vehicleIcon: '🚔', invulnerable: 0
+        };
+
+        let robbers = [];
+        let particles = [];
+        let moneyBags = [];
+        let bullets = [];
+        let portals = [];
+        let score = 0;
+        let arrests = 0;
+        let wantedLevel = 1;
+        let matchDuration = 300;
+        let timeLeft = 300;
+        let gameOver = false;
+        let gameWin = false;
+        let frameCount = 0;
+        let timerAccumulator = 0;
+        let animationId = null;
+        let screenShake = 0;
+        let arrestCooldown = 0;
+        let grappleCooldown = 0;
+        let portalCooldown = 0;
+        let timeFreezeCooldown = 0;
+        let timeFreezeActive = 0;
+        let portalShot = null;
+
+        const keys = {
+            ArrowLeft: false, ArrowRight: false, ArrowUp: false, ArrowDown: false,
+            a: false, d: false, w: false, s: false
+        };
+        let arrestPressed = false;
+        let mouseX = W/2, mouseY = H/2;
+        let usingMouse = false;
+
+        function startGame() {
+            matchDuration = selectedTime * 60;
+            const v = VEHICLES[selectedEnv].find(x => x.id === selectedVehicle) || VEHICLES[selectedEnv][0];
+            // Vehicle SIZE is NOT affected by "Bigger Circle" — only speed is affected by Speed Boost
+            PLAYER_RADIUS = v.radius;
+            PLAYER_SPEED = v.speed * (1 + vehicleUpgrades.speed * 0.15);
+
+            player.radius = PLAYER_RADIUS;
+            player.speed = PLAYER_SPEED;
+            player.vehicleId = v.id;
+            player.vehicleColor = v.color;
+            player.vehicleStripe = v.stripe;
+            player.vehicleIcon = v.icon;
+            player.invulnerable = 0;
+
+            resetGame();
+            updateAbilitySlots();
+            if (animationId) cancelAnimationFrame(animationId);
+            animationId = requestAnimationFrame(gameLoop);
+        }
+
+        function generateEnvironment() {
+            cityGrid = [];
+            const isWater = selectedEnv === 'water';
+            for (let y = 0; y < ROWS; y++) {
+                cityGrid[y] = [];
+                for (let x = 0; x < COLS; x++) cityGrid[y][x] = isWater ? 2 : 1;
+            }
+            if (selectedEnv === 'land') {
+                for (let y = 1; y < ROWS - 2; y += 3) {
+                    for (let x = 1; x < COLS - 2; x += 3) {
+                        if (Math.random() < 0.75) {
+                            for (let by = 0; by < 2; by++) {
+                                for (let bx = 0; bx < 2; bx++) {
+                                    if (y + by < ROWS && x + bx < COLS) cityGrid[y + by][x + bx] = 0;
+                                }
+                            }
+                        }
+                    }
+                }
+            } else if (selectedEnv === 'water') {
+                for (let i = 0; i < 10; i++) {
+                    const cx = Math.floor(Math.random() * (COLS - 4)) + 2;
+                    const cy = Math.floor(Math.random() * (ROWS - 4)) + 2;
+                    for (let dy = -1; dy <= 1; dy++) {
+                        for (let dx = -1; dx <= 1; dx++) {
+                            if (cy+dy >= 0 && cy+dy < ROWS && cx+dx >= 0 && cx+dx < COLS) cityGrid[cy+dy][cx+dx] = 1;
+                        }
+                    }
+                }
+            } else {
+                for (let y = 1; y < ROWS - 1; y += 2) {
+                    for (let x = 1; x < COLS - 1; x += 2) {
+                        if (Math.random() < 0.35) cityGrid[y][x] = 0;
+                    }
+                }
+            }
+            const spawnCX = Math.floor(COLS / 2), spawnCY = Math.floor(ROWS / 2);
+            for (let y = spawnCY - 1; y <= spawnCY + 1; y++) {
+                for (let x = spawnCX - 1; x <= spawnCX + 1; x++) {
+                    if (y >= 0 && y < ROWS && x >= 0 && x < COLS) cityGrid[y][x] = 1;
+                }
+            }
+        }
+
+        function isWalkable(x, y) {
+            const gx = Math.floor(x / GRID_SIZE), gy = Math.floor(y / GRID_SIZE);
+            if (gx < 0 || gx >= COLS || gy < 0 || gy >= ROWS) return false;
+            const cell = cityGrid[gy][gx];
+            if (selectedEnv === 'water') return cell !== 0;
+            if (selectedEnv === 'air') return cell !== 0;
+            return cell === 1;
+        }
+
+        function resetGame() {
+            generateEnvironment();
+            let spawnX = W/2, spawnY = H/2;
+            outer: for (let gy = 0; gy < ROWS; gy++) {
+                for (let gx = 0; gx < COLS; gx++) {
+                    if (cityGrid[gy][gx] !== 0) {
+                        spawnX = gx * GRID_SIZE + GRID_SIZE/2;
+                        spawnY = gy * GRID_SIZE + GRID_SIZE/2;
+                        break outer;
+                    }
+                }
+            }
+            player.x = spawnX; player.y = spawnY;
+            player.facingX = 1; player.facingY = 0;
+            player.sirenPhase = 0; player.isAlive = true; player.invulnerable = 0;
+
+            robbers = []; particles = []; moneyBags = []; bullets = []; portals = [];
+            portalShot = null;
+            score = 0; arrests = 0; wantedLevel = 1;
+            timeLeft = matchDuration; gameOver = false; gameWin = false;
+            frameCount = 0; timerAccumulator = 0;
+            screenShake = 0; arrestCooldown = 0;
+            grappleCooldown = 0; portalCooldown = 0;
+            timeFreezeCooldown = 0; timeFreezeActive = 0;
+
+            for (let k in keys) keys[k] = false;
+            arrestPressed = false;
+
+            spawnRobbers(2);
+            spawnMoneyBags(5);
+            updateUI();
+            updateTouchBtnVisuals();
+        }
+
+        function spawnRobbers(count) {
+            for (let i = 0; i < count; i++) {
+                let attempts = 0, rx, ry;
+                do {
+                    rx = Math.random() * (W - 100) + 50;
+                    ry = Math.random() * (H - 100) + 50;
+                    attempts++;
+                } while ((!isWalkable(rx, ry) || Math.hypot(rx - player.x, ry - player.y) < 200) && attempts < 100);
+                if (attempts >= 100) continue;
+                const speedMultiplier = 1 + (wantedLevel - 1) * 0.12;
+                robbers.push({
+                    x: rx, y: ry, radius: ROBBER_RADIUS,
+                    speed: ROBBER_BASE_SPEED * speedMultiplier,
+                    facingX: 0, facingY: 0, vx: 0, vy: 0,
+                    changeDirTimer: 0, carrying: Math.random() < 0.4,
+                    hitFlash: 0, isAlive: true,
+                    color: Math.random() < 0.5 ? '#4a8a2a' : '#8a4a2a'
+                });
+            }
+        }
+
+        function spawnMoneyBags(count) {
+            for (let i = 0; i < count; i++) {
+                let attempts = 0, mx, my;
+                do {
+                    mx = Math.random() * (W - 80) + 40;
+                    my = Math.random() * (H - 80) + 40;
+                    attempts++;
+                } while (!isWalkable(mx, my) && attempts < 50);
+                if (attempts >= 50) continue;
+                moneyBags.push({ x: mx, y: my, radius: 10, bob: Math.random() * Math.PI * 2 });
+            }
+        }
+
+        function formatTime(seconds) {
+            const m = Math.floor(seconds / 60);
+            const s = Math.floor(seconds % 60);
+            return m + ':' + (s < 10 ? '0' : '') + s;
+        }
+
+        function updateUI() {
+            scoreSpan.textContent = score;
+            coinsSpan.textContent = coins;
+            arrestsSpan.textContent = arrests;
+            wantedSpan.textContent = wantedLevel;
+            timerSpan.textContent = formatTime(timeLeft);
+        }
+
+        function updateTouchBtnVisuals() {
+            const map = [
+                [leftBtn, keys.ArrowLeft || keys.a],
+                [rightBtn, keys.ArrowRight || keys.d],
+                [upBtn, keys.ArrowUp || keys.w],
+                [downBtn, keys.ArrowDown || keys.s]
+            ];
+            map.forEach(([btn, pressed]) => {
+                if (pressed) btn.classList.add('pressed');
+                else btn.classList.remove('pressed');
+            });
+            if (arrestPressed) arrestBtn.classList.add('pressed');
+            else arrestBtn.classList.remove('pressed');
+        }
+
+        function updateAbilitySlots() {
+            const slots = [slot1, slot2, slot3];
+            const itemOrder = ['grapple', 'portal', 'timefreeze'];
+            slots.forEach((slot, i) => {
+                const itemId = itemOrder[i];
+                const level = ownedItems[itemId] || 0;
+                if (level > 0) {
+                    const item = SHOP_ITEMS[itemId];
+                    slot.classList.add('active', 'has-count');
+                    slot.title = item.name + ' (Lv ' + level + ')';
+                    slot.innerHTML = item.icon +
+                        '<span class="key-hint">' + (i+1) + '</span>' +
+                        '<span class="count-badge">' + level + '</span>';
+                } else {
+                    slot.classList.remove('active', 'has-count');
+                    slot.title = 'Empty';
+                    slot.innerHTML = '<span class="key-hint">' + (i+1) + '</span>' +
+                        '<span class="count-badge">0</span>';
+                }
+            });
+        }
+
+        function spawnParticles(x, y, color, count, speed = 3) {
+            for (let i = 0; i < count; i++) {
+                const angle = Math.random() * Math.PI * 2;
+                const spd = Math.random() * speed + 0.5;
+                particles.push({
+                    x, y, vx: Math.cos(angle) * spd, vy: Math.sin(angle) * spd,
+                    life: 30 + Math.random() * 20, maxLife: 50, color,
+                    size: Math.random() * 3 + 1.5
+                });
+            }
+        }
+
+        function useGrapple() {
+            if (!ownedItems.grapple || grappleCooldown > 0 || gameOver) return;
+            const level = ownedItems.grapple;
+            const range = [150, 220, 300][level - 1] || 150;
+            grappleCooldown = 90;
+            let dirX = player.facingX, dirY = player.facingY;
+            if (usingMouse) {
+                const dx = mouseX - player.x, dy = mouseY - player.y;
+                const d = Math.hypot(dx, dy);
+                if (d > 0.1) { dirX = dx / d; dirY = dy / d; }
+            }
+            let targetX = player.x + dirX * range;
+            let targetY = player.y + dirY * range;
+            const steps = Math.floor(range / 8);
+            for (let s = 1; s <= steps; s++) {
+                const tx = player.x + dirX * (s * 8);
+                const ty = player.y + dirY * (s * 8);
+                if (!isWalkable(tx, ty)) {
+                    targetX = player.x + dirX * ((s - 1) * 8);
+                    targetY = player.y + dirY * ((s - 1) * 8);
+                    break;
+                }
+            }
+            bullets.push({ type: 'grapple', x: player.x, y: player.y, targetX, targetY, progress: 0, maxProgress: 20, dirX, dirY, range });
+            if (level >= 3) {
+                robbers.forEach(r => {
+                    if (!r.isAlive) return;
+                    const d = Math.hypot(r.x - player.x, r.y - player.y);
+                    if (d < range + 20) {
+                        const rdx = (r.x - player.x) / d, rdy = (r.y - player.y) / d;
+                        const dot = rdx * dirX + rdy * dirY;
+                        if (dot > 0.7) {
+                            r.x = player.x + rdx * 50;
+                            r.y = player.y + rdy * 50;
+                            spawnParticles(r.x, r.y, '#ffd966', 8, 4);
+                        }
+                    }
+                });
+            }
+            spawnParticles(player.x, player.y, '#8fa8ff', 10, 4);
+        }
+
+        function usePortal() {
+            if (!ownedItems.portal || portalCooldown > 0 || gameOver) return;
+            const level = ownedItems.portal;
+            portalCooldown = 120;
+            if (portalShot) {
+                spawnParticles(player.x, player.y, '#d966ff', 20, 5);
+                player.x = portalShot.x;
+                player.y = portalShot.y;
+                if (!isWalkable(player.x, player.y)) {
+                    for (let angle = 0; angle < Math.PI * 2; angle += 0.5) {
+                        const tx = portalShot.x + Math.cos(angle) * 20;
+                        const ty = portalShot.y + Math.sin(angle) * 20;
+                        if (isWalkable(tx, ty)) { player.x = tx; player.y = ty; break; }
+                    }
+                }
+                spawnParticles(player.x, player.y, '#d966ff', 20, 5);
+                portalShot = null; portals = [];
+                if (level >= 2) player.invulnerable = 90;
+            } else {
+                let dirX = player.facingX, dirY = player.facingY;
+                if (usingMouse) {
+                    const dx = mouseX - player.x, dy = mouseY - player.y;
+                    const d = Math.hypot(dx, dy);
+                    if (d > 0.1) { dirX = dx / d; dirY = dy / d; }
+                }
+                let tx = player.x + dirX * 250;
+                let ty = player.y + dirY * 250;
+                tx = Math.max(player.radius, Math.min(W - player.radius, tx));
+                ty = Math.max(player.radius, Math.min(H - player.radius, ty));
+                portalShot = { x: tx, y: ty };
+                portals = [portalShot];
+                spawnParticles(tx, ty, '#d966ff', 15, 5);
+            }
+        }
+
+        function useTimeFreeze() {
+            if (!ownedItems.timefreeze || timeFreezeCooldown > 0 || gameOver) return;
+            const level = ownedItems.timefreeze;
+            timeFreezeCooldown = level >= 2 ? 300 : 420;
+            timeFreezeActive = level >= 2 ? 480 : 300;
+            spawnParticles(player.x, player.y, '#a0d0ff', 30, 6);
+            screenShake = 8;
+        }
+
+        function attemptArrest() {
+            if (arrestCooldown > 0 || gameOver) return;
+            arrestCooldown = 20;
+            // The GREEN arrest range is used here
+            const arrestRange = getArrestRange();
+            let bestTarget = null, bestDist = arrestRange;
+            for (let r of robbers) {
+                if (!r.isAlive) continue;
+                const d = Math.hypot(r.x - player.x, r.y - player.y);
+                if (d < bestDist) { bestDist = d; bestTarget = r; }
+            }
+            if (bestTarget) {
+                bestTarget.isAlive = false;
+                arrests++;
+                const reward = bestTarget.carrying ? 50 : 25;
+                score += reward;
+                coins += Math.floor(reward / 5);
+                saveData();
+                screenShake = 10;
+                spawnParticles(bestTarget.x, bestTarget.y, '#4aff4a', 20, 5);
+                spawnParticles(bestTarget.x, bestTarget.y, '#ffd966', 10, 4);
+                if (arrests > 0 && arrests % 3 === 0 && wantedLevel < 5) {
+                    wantedLevel++;
+                    spawnRobbers(1);
+                }
+                if (bestTarget.carrying && Math.random() < 0.7) {
+                    moneyBags.push({ x: bestTarget.x, y: bestTarget.y, radius: 10, bob: Math.random() * Math.PI * 2 });
+                }
+                updateUI();
+            } else {
+                spawnParticles(player.x + player.facingX * 30, player.y + player.facingY * 30, '#ff6666', 4, 2);
+            }
+        }
+
+        function updateGame() {
+            if (gameOver) return;
+            timerAccumulator++;
+            if (timerAccumulator >= 60) {
+                timerAccumulator = 0;
+                timeLeft -= 1;
+                updateUI();
+                if (timeLeft <= 0) {
+                    timeLeft = 0; gameOver = true;
+                    gameWin = score >= 200; updateUI();
+                    return;
+                }
+            }
+
+            let moveX = 0, moveY = 0;
+            if (keys.ArrowLeft || keys.a) moveX -= 1;
+            if (keys.ArrowRight || keys.d) moveX += 1;
+            if (keys.ArrowUp || keys.w) moveY -= 1;
+            if (keys.ArrowDown || keys.s) moveY += 1;
+
+            if (moveX !== 0 || moveY !== 0) {
+                const len = Math.sqrt(moveX*moveX + moveY*moveY);
+                moveX /= len; moveY /= len;
+                player.facingX = moveX; player.facingY = moveY;
+            }
+
+            const nextX = player.x + moveX * player.speed;
+            const nextY = player.y + moveY * player.speed;
+            if (isWalkable(nextX, player.y)) player.x = nextX;
+            if (isWalkable(player.x, nextY)) player.y = nextY;
+
+            player.x = Math.max(player.radius + 2, Math.min(W - player.radius - 2, player.x));
+            player.y = Math.max(player.radius + 2, Math.min(H - player.radius - 2, player.y));
+            player.sirenPhase += 0.15;
+
+            if (player.invulnerable > 0) player.invulnerable--;
+            if (arrestCooldown > 0) arrestCooldown--;
+            if (grappleCooldown > 0) grappleCooldown--;
+            if (portalCooldown > 0) portalCooldown--;
+            if (timeFreezeCooldown > 0) timeFreezeCooldown--;
+            if (timeFreezeActive > 0) timeFreezeActive--;
+
+            if (arrestPressed) { attemptArrest(); arrestPressed = false; }
+
+            for (let i = bullets.length - 1; i >= 0; i--) {
+                const b = bullets[i];
+                if (b.type === 'grapple') {
+                    b.progress++;
+                    const t = Math.min(1, b.progress / b.maxProgress);
+                    b.x = player.x + (b.targetX - player.x) * t;
+                    b.y = player.y + (b.targetY - player.y) * t;
+                    if (b.progress >= b.maxProgress) {
+                        if (b.targetX && b.targetY) {
+                            const dx = b.targetX - player.x, dy = b.targetY - player.y;
+                            const d = Math.hypot(dx, dy);
+                            if (d > 5) { player.x += dx * 0.3; player.y += dy * 0.3; }
+                        }
+                        bullets.splice(i, 1);
+                    }
+                } else bullets.splice(i, 1);
+            }
+
+            const freezeMultiplier = timeFreezeActive > 0 ? 0.25 : 1;
+
+            for (let i = robbers.length - 1; i >= 0; i--) {
+                const r = robbers[i];
+                if (!r.isAlive) { robbers.splice(i, 1); continue; }
+                if (r.hitFlash > 0) r.hitFlash--;
+
+                const dx = r.x - player.x, dy = r.y - player.y;
+                const playerDist = Math.hypot(dx, dy);
+                let targetVX = 0, targetVY = 0;
+                if (playerDist < 180) {
+                    targetVX = (dx / (playerDist || 1)) * r.speed;
+                    targetVY = (dy / (playerDist || 1)) * r.speed;
+                } else {
+                    if (r.changeDirTimer <= 0) {
+                        const angle = Math.random() * Math.PI * 2;
+                        r.vx = Math.cos(angle) * r.speed * 0.6;
+                        r.vy = Math.sin(angle) * r.speed * 0.6;
+                        r.changeDirTimer = 60 + Math.random() * 90;
+                    }
+                    r.changeDirTimer--;
+                    targetVX = r.vx; targetVY = r.vy;
+                }
+                r.vx += (targetVX - r.vx) * 0.15;
+                r.vy += (targetVY - r.vy) * 0.15;
+                const newX = r.x + r.vx * freezeMultiplier;
+                const newY = r.y + r.vy * freezeMultiplier;
+                if (isWalkable(newX, r.y)) r.x = newX; else r.vx *= -0.7;
+                if (isWalkable(r.x, newY)) r.y = newY; else r.vy *= -0.7;
+                r.x = Math.max(r.radius + 2, Math.min(W - r.radius - 2, r.x));
+                r.y = Math.max(r.radius + 2, Math.min(H - r.radius - 2, r.y));
+                if (Math.abs(r.vx) > 0.1 || Math.abs(r.vy) > 0.1) {
+                    const vl = Math.hypot(r.vx, r.vy);
+                    r.facingX = r.vx / vl; r.facingY = r.vy / vl;
+                }
+            }
+
+            if (ownedItems.magnet) {
+                const magnetRange = ownedItems.magnet >= 2 ? 150 : 80;
+                moneyBags.forEach(m => {
+                    const dx = player.x - m.x, dy = player.y - m.y;
+                    const d = Math.hypot(dx, dy);
+                    if (d < magnetRange && d > 0.1) {
+                        m.x += (dx / d) * 1.5; m.y += (dy / d) * 1.5;
+                    }
+                });
+            }
+
+            for (let i = moneyBags.length - 1; i >= 0; i--) {
+                const m = moneyBags[i];
+                m.bob += 0.12;
+                const d = Math.hypot(m.x - player.x, m.y - player.y);
+                if (d < player.radius + m.radius + 5) {
+                    score += 15; coins += 3; saveData();
+                    spawnParticles(m.x, m.y, '#ffd966', 12, 4);
+                    moneyBags.splice(i, 1);
+                    updateUI();
+                }
+            }
+
+            if (frameCount % 300 === 0 && robbers.length < 2 + wantedLevel) spawnRobbers(1);
+            if (frameCount % 240 === 0 && moneyBags.length < 5) spawnMoneyBags(1);
+
+            for (let i = particles.length - 1; i >= 0; i--) {
+                const p = particles[i];
+                p.x += p.vx; p.y += p.vy;
+                p.vx *= 0.94; p.vy *= 0.94;
+                p.life--;
+                if (p.life <= 0) particles.splice(i, 1);
+            }
+
+            if (screenShake > 0) screenShake *= 0.88;
+            if (screenShake < 0.3) screenShake = 0;
+            frameCount++;
+        }
+
+        function drawEnvironment() {
+            if (selectedEnv === 'water') {
+                const g = ctx.createLinearGradient(0, 0, 0, H);
+                g.addColorStop(0, '#1a5a8a'); g.addColorStop(0.5, '#2a7aaa'); g.addColorStop(1, '#1a5a8a');
+                ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+                ctx.strokeStyle = 'rgba(200, 230, 255, 0.15)'; ctx.lineWidth = 2;
+                for (let i = 0; i < 15; i++) {
+                    const wy = (i * 35 + frameCount * 0.3) % H;
+                    ctx.beginPath();
+                    for (let wx = 0; wx <= W; wx += 20) {
+                        const wy2 = wy + Math.sin(wx * 0.05 + frameCount * 0.05) * 4;
+                        if (wx === 0) ctx.moveTo(wx, wy2); else ctx.lineTo(wx, wy2);
+                    }
+                    ctx.stroke();
+                }
+            } else if (selectedEnv === 'air') {
+                const g = ctx.createLinearGradient(0, 0, 0, H);
+                g.addColorStop(0, '#4a8ac0'); g.addColorStop(0.6, '#7ab0e0'); g.addColorStop(1, '#a0d0f0');
+                ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+                for (let i = 0; i < 10; i++) {
+                    const cx = (i * 90 + frameCount * 0.4) % (W + 200) - 100;
+                    const cy = (i * 50) % H;
+                    ctx.beginPath();
+                    ctx.arc(cx, cy, 40, 0, Math.PI * 2);
+                    ctx.arc(cx + 40, cy - 10, 30, 0, Math.PI * 2);
+                    ctx.arc(cx - 30, cy + 5, 25, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            } else {
+                ctx.fillStyle = '#2a2a2a'; ctx.fillRect(0, 0, W, H);
+            }
+
+            if (timeFreezeActive > 0) {
+                ctx.fillStyle = 'rgba(100, 200, 255, 0.08)';
+                ctx.fillRect(0, 0, W, H);
+            }
+
+            for (let gy = 0; gy < ROWS; gy++) {
+                for (let gx = 0; gx < COLS; gx++) {
+                    const x = gx * GRID_SIZE, y = gy * GRID_SIZE;
+                    const cell = cityGrid[gy][gx];
+                    if (selectedEnv === 'land') {
+                        if (cell === 1) {
+                            ctx.fillStyle = '#3a3a3a'; ctx.fillRect(x, y, GRID_SIZE, GRID_SIZE);
+                            if (gy % 2 === 0 && gx % 2 === 0) {
+                                ctx.fillStyle = 'rgba(255, 255, 200, 0.3)';
+                                ctx.fillRect(x + GRID_SIZE/2 - 2, y + GRID_SIZE/2 - 2, 4, 4);
+                            }
+                        } else if (cell === 0) {
+                            ctx.fillStyle = 'rgba(0,0,0,0.4)';
+                            ctx.fillRect(x + 3, y + 3, GRID_SIZE - 6, GRID_SIZE - 6);
+                            const hue = ((gx * 7 + gy * 13) % 5);
+                            const colors = ['#5a4a6a', '#6a5a4a', '#4a5a6a', '#5a6a4a', '#6a4a5a'];
+                            ctx.fillStyle = colors[hue];
+                            ctx.fillRect(x + 2, y + 2, GRID_SIZE - 4, GRID_SIZE - 4);
+                            ctx.fillStyle = 'rgba(255, 230, 150, 0.6)';
+                            for (let wy = y + 6; wy < y + GRID_SIZE - 8; wy += 8) {
+                                for (let wx = x + 6; wx < x + GRID_SIZE - 8; wx += 8) {
+                                    if ((wx + wy) % 3 !== 0) ctx.fillRect(wx, wy, 5, 5);
+                                }
+                            }
+                        }
+                    } else if (selectedEnv === 'water') {
+                        if (cell === 0) {
+                            ctx.fillStyle = '#5a4a3a'; ctx.fillRect(x + 2, y + 2, GRID_SIZE - 4, GRID_SIZE - 4);
+                            ctx.fillStyle = '#3a2a1a'; ctx.fillRect(x + 8, y + 8, GRID_SIZE - 16, GRID_SIZE - 16);
+                        } else if (cell === 1) {
+                            ctx.fillStyle = '#8a7a5a'; ctx.fillRect(x + 1, y + 1, GRID_SIZE - 2, GRID_SIZE - 2);
+                            ctx.fillStyle = '#6a5a3a'; ctx.fillRect(x + 4, y + 4, GRID_SIZE - 8, GRID_SIZE - 8);
+                        }
+                    } else {
+                        if (cell === 0) {
+                            ctx.fillStyle = 'rgba(255, 255, 255, 0.55)';
+                            ctx.beginPath(); ctx.arc(x + GRID_SIZE/2, y + GRID_SIZE/2, GRID_SIZE * 0.55, 0, Math.PI * 2); ctx.fill();
+                            ctx.fillStyle = 'rgba(220, 220, 240, 0.4)';
+                            ctx.beginPath(); ctx.arc(x + GRID_SIZE/2 + 8, y + GRID_SIZE/2 + 5, GRID_SIZE * 0.4, 0, Math.PI * 2); ctx.fill();
+                        }
+                    }
+                }
+            }
+
+            const gradient = ctx.createRadialGradient(W/2, H/2, 100, W/2, H/2, W * 0.7);
+            gradient.addColorStop(0, 'rgba(0,0,0,0)');
+            gradient.addColorStop(1, 'rgba(0,0,0,0.5)');
+            ctx.fillStyle = gradient; ctx.fillRect(0, 0, W, H);
+        }
+
+        function drawPlayer() {
+            const x = player.x, y = player.y, r = player.radius;
+            const sirenColor = Math.sin(player.sirenPhase) > 0 ? '#ff3333' : '#3333ff';
+            const flash = player.invulnerable > 0 && Math.floor(player.invulnerable / 4) % 2 === 0;
+
+            // ===== GREEN ARREST RANGE CIRCLE =====
+            // This is the circle that the "Bigger Circle" upgrade enlarges
+            const arrestRange = getArrestRange();
+            if (arrestRange > 0) {
+                // Outer soft glow
+                ctx.fillStyle = 'rgba(74, 255, 74, 0.04)';
+                ctx.beginPath(); ctx.arc(x, y, arrestRange, 0, Math.PI * 2); ctx.fill();
+
+                // Outer glow ring
+                ctx.strokeStyle = 'rgba(74, 255, 74, 0.15)';
+                ctx.lineWidth = 10;
+                ctx.beginPath(); ctx.arc(x, y, arrestRange, 0, Math.PI * 2); ctx.stroke();
+
+                // Main dashed green circle
+                ctx.strokeStyle = 'rgba(74, 255, 74, 0.65)';
+                ctx.lineWidth = 2.5;
+                ctx.setLineDash([8, 6]);
+                ctx.beginPath(); ctx.arc(x, y, arrestRange, 0, Math.PI * 2); ctx.stroke();
+                ctx.setLineDash([]);
+
+                // Level label above the circle
+                if (vehicleUpgrades.arrestRange > 0) {
+                    ctx.font = 'bold 9px "Courier New", monospace';
+                    ctx.fillStyle = 'rgba(74, 255, 74, 0.85)';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('Lv ' + vehicleUpgrades.arrestRange, x, y - arrestRange - 8);
+                    ctx.textAlign = 'left';
+                }
+            }
+
+            // Shadow
+            ctx.fillStyle = 'rgba(0,0,0,0.5)';
+            ctx.beginPath(); ctx.ellipse(x, y + r * 0.9, r * 1.2, r * 0.5, 0, 0, Math.PI * 2); ctx.fill();
+
+            // Vehicle glow
+            ctx.shadowColor = sirenColor;
+            ctx.shadowBlur = 22 + Math.sin(frameCount * 0.2) * 6;
+
+            const vid = player.vehicleId;
+            if (vid === 'motorcycle') {
+                ctx.fillStyle = flash ? '#ffffff' : '#1a1a1a';
+                ctx.beginPath(); ctx.ellipse(x, y, r * 1.3, r * 0.7, 0, 0, Math.PI * 2); ctx.fill();
+                ctx.shadowBlur = 0;
+                ctx.fillStyle = '#ffffff';
+                ctx.beginPath(); ctx.arc(x, y, r * 0.5, 0, Math.PI * 2); ctx.fill();
+            } else if (vid === 'truck') {
+                ctx.fillStyle = flash ? '#ffffff' : player.vehicleColor;
+                ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
+                ctx.shadowBlur = 0;
+                ctx.fillStyle = player.vehicleStripe;
+                ctx.fillRect(x - r * 0.9, y - r * 0.3, r * 1.8, r * 0.6);
+            } else if (vid === 'boat' || vid === 'speedboat' || vid === 'hovercraft') {
+                ctx.fillStyle = flash ? '#ffffff' : player.vehicleColor;
+                ctx.beginPath(); ctx.ellipse(x, y, r * 1.3, r * 0.75, 0, 0, Math.PI * 2); ctx.fill();
+                ctx.shadowBlur = 0;
+                ctx.fillStyle = player.vehicleStripe;
+                ctx.fillRect(x - r * 0.8, y - r * 0.15, r * 1.6, r * 0.3);
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)'; ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(x - r * 0.5, y + r * 0.9); ctx.lineTo(x - r * 1.5, y + r * 1.6);
+                ctx.moveTo(x + r * 0.5, y + r * 0.9); ctx.lineTo(x + r * 1.5, y + r * 1.6);
+                ctx.stroke();
+            } else if (vid === 'helicopter' || vid === 'jet' || vid === 'drone') {
+                ctx.fillStyle = flash ? '#ffffff' : player.vehicleColor;
+                ctx.beginPath(); ctx.ellipse(x, y, r * 1.2, r * 0.8, 0, 0, Math.PI * 2); ctx.fill();
+                ctx.shadowBlur = 0;
+                ctx.fillStyle = player.vehicleStripe;
+                ctx.fillRect(x - r * 1.4, y - r * 0.15, r * 2.8, r * 0.3);
+                if (vid === 'helicopter' || vid === 'drone') {
+                    ctx.strokeStyle = 'rgba(200, 200, 200, 0.6)'; ctx.lineWidth = 3;
+                    const rotorAngle = frameCount * 0.8;
+                    ctx.beginPath(); ctx.ellipse(x, y, r * 1.6, r * 0.3, rotorAngle, 0, Math.PI * 2); ctx.stroke();
+                }
+            } else {
+                ctx.fillStyle = flash ? '#ffffff' : '#ffffff';
+                ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
+                ctx.shadowBlur = 0;
+                ctx.fillStyle = '#1a3a8a';
+                ctx.beginPath(); ctx.arc(x, y, r * 0.82, 0, Math.PI * 2); ctx.fill();
+                ctx.fillStyle = '#ffffff';
+                ctx.beginPath(); ctx.arc(x, y, r * 0.55, 0, Math.PI * 2); ctx.fill();
+            }
+
+            ctx.fillStyle = sirenColor;
+            ctx.shadowColor = sirenColor;
+            ctx.shadowBlur = 15;
+            ctx.beginPath(); ctx.arc(x, y - r * 0.4, r * 0.3, 0, Math.PI * 2); ctx.fill();
+            ctx.shadowBlur = 0;
+
+            ctx.fillStyle = '#ffd966';
+            ctx.font = 'bold 14px "Courier New", monospace';
+            ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+            ctx.fillText('★', x, y + 2);
+            ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
+
+            ctx.fillStyle = '#ffd966';
+            ctx.beginPath(); ctx.arc(x + player.facingX * (r + 6), y + player.facingY * (r + 6), 4, 0, Math.PI * 2); ctx.fill();
+        }
+
+        function drawRobber(r) {
+            const x = r.x, y = r.y, radius = r.radius;
+            ctx.fillStyle = 'rgba(0,0,0,0.5)';
+            ctx.beginPath(); ctx.ellipse(x, y + radius * 0.9, radius * 1.1, radius * 0.45, 0, 0, Math.PI * 2); ctx.fill();
+
+            ctx.shadowColor = r.carrying ? '#ffd966' : '#ff3333';
+            ctx.shadowBlur = r.carrying ? 20 : 10;
+            ctx.fillStyle = r.color;
+            ctx.beginPath(); ctx.arc(x, y, radius, 0, Math.PI * 2); ctx.fill();
+            ctx.shadowBlur = 0;
+
+            ctx.fillStyle = '#111111';
+            ctx.beginPath();
+            ctx.arc(x, y, radius * 0.85, -0.5, 0.5);
+            ctx.arc(x, y, radius * 0.85, Math.PI - 0.5, Math.PI + 0.5);
+            ctx.fill();
+
+            ctx.fillStyle = '#ffffff';
+            const perpX = -r.facingY, perpY = r.facingX;
+            ctx.beginPath();
+            ctx.arc(x + r.facingX * radius * 0.4 + perpX * radius * 0.3, y + r.facingY * radius * 0.4 + perpY * radius * 0.3, radius * 0.15, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(x + r.facingX * radius * 0.4 - perpX * radius * 0.3, y + r.facingY * radius * 0.4 - perpY * radius * 0.3, radius * 0.15, 0, Math.PI * 2);
+            ctx.fill();
+
+            if (r.carrying) {
+                ctx.fillStyle = '#8a6a3a';
+                ctx.beginPath(); ctx.arc(x - r.facingX * radius * 0.8, y - r.facingY * radius * 0.8, radius * 0.4, 0, Math.PI * 2); ctx.fill();
+                ctx.fillStyle = '#ffd966';
+                ctx.font = 'bold 10px "Courier New", monospace';
+                ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+                ctx.fillText('$', x - r.facingX * radius * 0.8, y - r.facingY * radius * 0.8);
+                ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
+            }
+
+            if (timeFreezeActive > 0) {
+                ctx.strokeStyle = 'rgba(100, 200, 255, 0.7)'; ctx.lineWidth = 2;
+                ctx.beginPath(); ctx.arc(x, y, radius + 4, 0, Math.PI * 2); ctx.stroke();
+            }
+        }
+
+        function drawMoneyBags() {
+            moneyBags.forEach(m => {
+                const bob = Math.sin(m.bob) * 3;
+                ctx.shadowColor = '#ffd966'; ctx.shadowBlur = 20;
+                ctx.fillStyle = 'rgba(0,0,0,0.4)';
+                ctx.beginPath(); ctx.ellipse(m.x, m.y + 12, 8, 3, 0, 0, Math.PI * 2); ctx.fill();
+                ctx.fillStyle = '#8a6a3a';
+                ctx.beginPath(); ctx.arc(m.x, m.y + bob, m.radius, 0, Math.PI * 2); ctx.fill();
+                ctx.fillStyle = '#5a3a1a';
+                ctx.fillRect(m.x - 5, m.y + bob - m.radius - 4, 10, 5);
+                ctx.shadowBlur = 0;
+                ctx.fillStyle = '#ffd966';
+                ctx.font = 'bold 14px "Courier New", monospace';
+                ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+                ctx.fillText('$', m.x, m.y + bob + 2);
+                ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
+            });
+            ctx.shadowBlur = 0;
+        }
+
+        function drawBullets() {
+            bullets.forEach(b => {
+                if (b.type === 'grapple') {
+                    ctx.strokeStyle = '#8fa8ff'; ctx.lineWidth = 3;
+                    ctx.beginPath(); ctx.moveTo(player.x, player.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+                    ctx.fillStyle = '#ffd966'; ctx.shadowColor = '#ffd966'; ctx.shadowBlur = 15;
+                    ctx.beginPath(); ctx.arc(b.x, b.y, 6, 0, Math.PI * 2); ctx.fill();
+                    ctx.shadowBlur = 0;
+                }
+            });
+        }
+
+        function drawPortals() {
+            portals.forEach(p => {
+                ctx.shadowColor = '#d966ff'; ctx.shadowBlur = 25;
+                ctx.strokeStyle = '#d966ff'; ctx.lineWidth = 4;
+                const pulse = 1 + Math.sin(frameCount * 0.15) * 0.2;
+                ctx.beginPath(); ctx.arc(p.x, p.y, 18 * pulse, 0, Math.PI * 2); ctx.stroke();
+                ctx.beginPath(); ctx.arc(p.x, p.y, 12 * pulse, 0, Math.PI * 2); ctx.stroke();
+                ctx.shadowBlur = 0;
+                ctx.strokeStyle = '#ff88ff'; ctx.lineWidth = 2;
+                ctx.beginPath();
+                for (let a = 0; a < Math.PI * 4; a += 0.1) {
+                    const rr = a * 2;
+                    const px = p.x + Math.cos(a + frameCount * 0.1) * rr;
+                    const py = p.y + Math.sin(a + frameCount * 0.1) * rr;
+                    if (a === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+                }
+                ctx.stroke();
+            });
+        }
+
+        function drawParticles() {
+            particles.forEach(p => {
+                const alpha = p.life / p.maxLife;
+                ctx.globalAlpha = alpha;
+                ctx.fillStyle = p.color;
+                ctx.beginPath(); ctx.arc(p.x, p.y, p.size * alpha, 0, Math.PI * 2); ctx.fill();
+            });
+            ctx.globalAlpha = 1;
+        }
+
+        function drawHUD() {
+            ctx.font = 'bold 11px "Courier New", monospace';
+            ctx.fillStyle = 'rgba(255, 217, 102, 0.35)';
+            ctx.textAlign = 'right';
+            ctx.fillText('MADE BY IBRAHIM ATIF', W - 12, H - 10);
+            ctx.textAlign = 'left';
+
+            ctx.font = 'bold 22px "Courier New", monospace';
+            ctx.fillStyle = '#ffd966';
+            ctx.textAlign = 'center';
+            let starStr = '';
+            for (let i = 0; i < wantedLevel; i++) starStr += '★';
+            ctx.fillText(starStr, W/2, 28);
+
+            const barW = 200, barH = 8;
+            const barX = (W - barW) / 2, barY = 42;
+            const timePct = timeLeft / matchDuration;
+            ctx.fillStyle = 'rgba(0,0,0,0.6)'; ctx.fillRect(barX, barY, barW, barH);
+            ctx.fillStyle = timePct > 0.5 ? '#4aff4a' : timePct > 0.25 ? '#ffd966' : '#ff4a4a';
+            ctx.fillRect(barX, barY, barW * timePct, barH);
+            ctx.strokeStyle = 'rgba(255,255,255,0.3)'; ctx.lineWidth = 1;
+            ctx.strokeRect(barX, barY, barW, barH);
+
+            ctx.font = 'bold 13px "Courier New", monospace';
+            ctx.fillStyle = '#ff8888';
+            ctx.textAlign = 'left';
+            ctx.fillText('🚔 ' + robbers.length, 15, 24);
+
+            ctx.fillStyle = '#ffd966';
+            ctx.fillText('🪙 ' + coins, 15, H - 12);
+
+            ctx.font = 'bold 10px "Courier New", monospace';
+            ctx.fillStyle = '#8fa8ff';
+            const envLabel = selectedEnv === 'land' ? '🏙️ LAND' : selectedEnv === 'water' ? '🌊 WATER' : '☁️ AIR';
+            ctx.fillText(envLabel + ' — ' + player.vehicleIcon, 15, H - 28);
+
+            // Arrest range level display
+            if (vehicleUpgrades.arrestRange > 0) {
+                ctx.fillStyle = '#4aff4a';
+                ctx.fillText('🟢 ARREST RANGE Lv ' + vehicleUpgrades.arrestRange + ' (+' + (vehicleUpgrades.arrestRange * 25) + '%)', 15, H - 44);
+            }
+
+            const itemY = H - 60;
+            if (ownedItems.grapple && grappleCooldown > 0) {
+                ctx.fillStyle = 'rgba(143, 168, 255, 0.6)'; ctx.fillRect(15, itemY, 60, 6);
+                ctx.fillStyle = '#8fa8ff'; ctx.fillRect(15, itemY, 60 * (1 - grappleCooldown / 90), 6);
+            }
+            if (ownedItems.portal && portalCooldown > 0) {
+                ctx.fillStyle = 'rgba(217, 102, 255, 0.6)'; ctx.fillRect(80, itemY, 60, 6);
+                ctx.fillStyle = '#d966ff'; ctx.fillRect(80, itemY, 60 * (1 - portalCooldown / 120), 6);
+            }
+            if (ownedItems.timefreeze && timeFreezeCooldown > 0) {
+                ctx.fillStyle = 'rgba(160, 208, 255, 0.6)'; ctx.fillRect(145, itemY, 60, 6);
+                ctx.fillStyle = '#a0d0ff'; ctx.fillRect(145, itemY, 60 * (1 - timeFreezeCooldown / 420), 6);
+            }
+            if (timeFreezeActive > 0) {
+                ctx.font = 'bold 20px "Courier New", monospace';
+                ctx.fillStyle = '#a0d0ff';
+                ctx.textAlign = 'center';
+                ctx.shadowColor = '#a0d0ff'; ctx.shadowBlur = 15;
+                ctx.fillText('⏱️ TIME FROZEN', W/2, 80);
+                ctx.shadowBlur = 0; ctx.textAlign = 'left';
+            }
+        }
+
+        function drawGameOver() {
+            if (!gameOver) return;
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.82)';
+            ctx.fillRect(0, 0, W, H);
+            ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+
+            ctx.font = 'bold 44px "Courier New", monospace';
+            ctx.fillStyle = '#ffd966';
+            ctx.shadowColor = '#aa8800'; ctx.shadowBlur = 25;
+            ctx.fillText('TIME UP!', W/2, H/2 - 90);
+
+            ctx.font = 'bold 22px "Courier New", monospace';
+            ctx.fillStyle = '#ffffff'; ctx.shadowBlur = 10;
+            ctx.fillText('Arrests: ' + arrests + '  |  Score: ' + score, W/2, H/2 - 40);
+
+            ctx.font = 'bold 20px "Courier New", monospace';
+            ctx.fillStyle = '#ffd966';
+            ctx.fillText('🪙 Coins Earned This Match: ' + Math.floor(score / 5), W/2, H/2);
+
+            ctx.font = 'bold 18px "Courier New", monospace';
+            if (score >= 200) {
+                ctx.fillStyle = '#4aff4a';
+                ctx.fillText('🏆 CASE CLOSED — PROMOTION!', W/2, H/2 + 45);
+            } else {
+                ctx.fillStyle = '#ff8888';
+                ctx.fillText('Try again, rookie...', W/2, H/2 + 45);
+            }
+
+            ctx.font = '14px "Courier New", monospace';
+            ctx.fillStyle = '#ffd966'; ctx.shadowBlur = 8;
+            ctx.fillText('★ MADE BY IBRAHIM ATIF ★', W/2, H/2 + 85);
+
+            ctx.font = '15px "Courier New", monospace';
+            ctx.fillStyle = '#b0c0ff'; ctx.shadowBlur = 5;
+            ctx.fillText('Tap ☰ for new match  |  ↻ to replay', W/2, H/2 + 115);
+
+            ctx.shadowBlur = 0; ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
+        }
+
+        function gameLoop() {
+            updateGame();
+            const shakeX = (Math.random() - 0.5) * screenShake;
+            const shakeY = (Math.random() - 0.5) * screenShake;
+            ctx.save();
+            ctx.translate(shakeX, shakeY);
+            ctx.clearRect(-20, -20, W + 40, H + 40);
+            drawEnvironment();
+            drawMoneyBags();
+            drawPortals();
+            robbers.forEach(r => drawRobber(r));
+            drawBullets();
+            drawPlayer();
+            drawParticles();
+            drawHUD();
+            drawGameOver();
+            ctx.restore();
+            animationId = requestAnimationFrame(gameLoop);
+        }
+
+        // ===== INPUT =====
+        function handleKeyDown(e) {
+            const key = e.key;
+            const preventKeys = ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', ' ', 'w', 'a', 's', 'd', '1', '2', '3', 'W', 'A', 'S', 'D'];
+            if (preventKeys.includes(key)) e.preventDefault();
+            if (key === ' ') { arrestPressed = true; updateTouchBtnVisuals(); }
+            else if (key === '1') useGrapple();
+            else if (key === '2') usePortal();
+            else if (key === '3') useTimeFreeze();
+            else if (key === 'a' || key === 'A') keys.a = true;
+            else if (key === 'd' || key === 'D') keys.d = true;
+            else if (key === 'w' || key === 'W') keys.w = true;
+            else if (key === 's' || key === 'S') keys.s = true;
+            else if (keys.hasOwnProperty(key)) keys[key] = true;
+            updateTouchBtnVisuals();
+        }
+
+        function handleKeyUp(e) {
+            const key = e.key;
+            const preventKeys = ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', ' ', 'w', 'a', 's', 'd', '1', '2', '3', 'W', 'A', 'S', 'D'];
+            if (preventKeys.includes(key)) e.preventDefault();
+            if (key === ' ') { arrestPressed = false; updateTouchBtnVisuals(); }
+            else if (key === 'a' || key === 'A') keys.a = false;
+            else if (key === 'd' || key === 'D') keys.d = false;
+            else if (key === 'w' || key === 'W') keys.w = false;
+            else if (key === 's' || key === 'S') keys.s = false;
+            else if (keys.hasOwnProperty(key)) keys[key] = false;
+            updateTouchBtnVisuals();
+        }
+
+        function bindButton(btn, onPress, onRelease) {
+            const press = (e) => { e.preventDefault(); e.stopPropagation(); onPress(); updateTouchBtnVisuals(); };
+            const release = (e) => { e.preventDefault(); e.stopPropagation(); if (onRelease) onRelease(); updateTouchBtnVisuals(); };
+            btn.addEventListener('touchstart', press, { passive: false });
+            btn.addEventListener('touchend', release, { passive: false });
+            btn.addEventListener('touchcancel', release, { passive: false });
+            btn.addEventListener('mousedown', press);
+            btn.addEventListener('mouseup', release);
+            btn.addEventListener('mouseleave', release);
+            btn.addEventListener('contextmenu', (e) => e.preventDefault());
+        }
+
+        canvas.addEventListener('mousemove', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            mouseX = (e.clientX - rect.left) * scaleX;
+            mouseY = (e.clientY - rect.top) * scaleY;
+            usingMouse = true;
+        });
+
+        canvas.addEventListener('mousedown', (e) => {
+            if (e.button === 0) {
+                e.preventDefault();
+                arrestPressed = true;
+                setTimeout(() => { arrestPressed = false; }, 100);
+            } else if (e.button === 2) {
+                e.preventDefault();
+                useGrapple();
+            }
+        });
+
+        canvas.addEventListener('contextmenu', (e) => e.preventDefault());
+
+        function init() {
+            generateEnvironment();
+            resetGame();
+            updateCoinDisplays();
+
+            window.addEventListener('keydown', handleKeyDown);
+            window.addEventListener('keyup', handleKeyUp);
+
+            restartBtn.addEventListener('click', () => { startGame(); });
+            restartBtn.addEventListener('touchstart', (e) => { e.preventDefault(); startGame(); }, { passive: false });
+
+            menuButton.addEventListener('click', () => {
+                gameWrapper.style.display = 'none';
+                showScreen(envScreen);
+                updateEnvSummary();
+                if (animationId) cancelAnimationFrame(animationId);
+            });
+            menuButton.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                gameWrapper.style.display = 'none';
+                showScreen(envScreen);
+                updateEnvSummary();
+                if (animationId) cancelAnimationFrame(animationId);
+            }, { passive: false });
+
+            bindButton(leftBtn, () => { keys.ArrowLeft = true; }, () => { keys.ArrowLeft = false; });
+            bindButton(rightBtn, () => { keys.ArrowRight = true; }, () => { keys.ArrowRight = false; });
+            bindButton(upBtn, () => { keys.ArrowUp = true; }, () => { keys.ArrowUp = false; });
+            bindButton(downBtn, () => { keys.ArrowDown = true; }, () => { keys.ArrowDown = false; });
+            bindButton(arrestBtn, () => { arrestPressed = true; }, () => { arrestPressed = false; });
+            bindButton(item1Btn, () => { useGrapple(); }, () => {});
+            bindButton(item2Btn, () => { usePortal(); }, () => {});
+
+            canvas.addEventListener('touchstart', (e) => e.preventDefault(), { passive: false });
+            canvas.addEventListener('touchmove', (e) => e.preventDefault(), { passive: false });
+        }
+
+        init();
+
+        window.addEventListener('beforeunload', () => {
+            if (animationId) cancelAnimationFrame(animationId);
+            window.removeEventListener('keydown', handleKeyDown);
+            window.removeEventListener('keyup', handleKeyUp);
+        });
+
+    })();
+</script>
+</body>
+</html>
